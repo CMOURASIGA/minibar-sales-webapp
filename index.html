@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Minibar EAC - Controle de Vendas</title>
+    <meta name="theme-color" content="#1e4d72">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Minibar EAC">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e4d72 0%, #2d5f8a 50%, #3a6f9a 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 15px 10px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(30, 77, 114, 0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px;
+            background: linear-gradient(135deg, #1e4d72 0%, #dc143c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #dc143c;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        h1 {
+            color: #1e4d72;
+            font-size: 18px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #dc143c;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        .screen {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(30, 77, 114, 0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px 16px;
+            margin: 8px 0;
+            background: linear-gradient(135deg, #1e4d72 0%, #2d5f8a 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 25px rgba(30, 77, 114, 0.4);
+            position: relative;
+            overflow: hidden;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 50px;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            box-shadow: 0 6px 25px rgba(108, 117, 125, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            box-shadow: 0 6px 25px rgba(40, 167, 69, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc143c 0%, #c82333 100%);
+            box-shadow: 0 6px 25px rgba(220, 20, 60, 0.4);
+        }
+        
+        .btn-register {
+            background: linear-gradient(135deg, #dc143c 0%, #a01020 100%);
+            box-shadow: 0 6px 25px rgba(220, 20, 60, 0.4);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #1e4d72;
+            font-size: 13px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #1e4d72;
+            box-shadow: 0 0 0 3px rgba(30, 77, 114, 0.1);
+        }
+        
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 10px center;
+            background-repeat: no-repeat;
+            background-size: 14px;
+            padding-right: 35px;
+        }
+        
+        .cart-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border-left: 4px solid #1e4d72;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-weight: 600;
+            color: #1e4d72;
+            margin-bottom: 3px;
+            font-size: 14px;
+        }
+        
+        .cart-item-details {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .cart-item-price {
+            font-weight: bold;
+            color: #dc143c;
+            font-size: 15px;
+            margin-right: 8px;
+        }
+        
+        .remove-btn {
+            background: linear-gradient(135deg, #dc143c 0%, #c82333 100%);
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 10px rgba(220, 20, 60, 0.3);
+        }
+        
+        .remove-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .alert {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 12px;
+            font-weight: 500;
+            border: none;
+            animation: slideIn 0.3s ease;
+            font-size: 14px;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .alert-error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border-left: 4px solid #dc143c;
+        }
+        
+        .total-section {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+            border: 2px solid #28a745;
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.2);
+        }
+        
+        .total-amount {
+            font-size: 22px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .history-item {
+            background: linear-gradient(135deg, white 0%, #f8f9fa 100%);
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .history-date {
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #1e4d72;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1e4d72;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+            transition: all 0.2s ease;
+            font-size: 13px;
+        }
+        
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .customer-form {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #1e4d72;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, white 0%, #f8f9fa 100%);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e4d72;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        h2 {
+            font-size: 16px;
+            color: #1e4d72;
+            margin-bottom: 15px;
+        }
+        
+        h3 {
+            font-size: 14px;
+            color: #1e4d72;
+            margin: 15px 0 8px 0;
+        }
+        
+        /* Melhorias específicas para mobile */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+                padding: 8px;
+            }
+            
+            .header {
+                padding: 12px 8px;
+                margin-bottom: 12px;
+            }
+            
+            .screen {
+                padding: 12px;
+                margin-bottom: 8px;
+            }
+            
+            .logo {
+                width: 70px;
+                height: 70px;
+            }
+            
+            h1 {
+                font-size: 16px;
+            }
+            
+            .subtitle {
+                font-size: 10px;
+            }
+            
+            .btn {
+                padding: 12px 14px;
+                font-size: 14px;
+                min-height: 48px;
+            }
+            
+            .cart-item {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: left;
+            }
+            
+            .cart-item-price {
+                margin: 8px 0;
+                text-align: center;
+                font-size: 16px;
+            }
+            
+            .remove-btn {
+                align-self: center;
+                margin-top: 8px;
+            }
+        }
+        
+        /* Tablet */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .container {
+                max-width: 500px;
+                padding: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* Desktop */
+        @media (min-width: 769px) {
+            .container {
+                max-width: 450px;
+                padding: 20px;
+            }
+            
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 30px rgba(30, 77, 114, 0.6);
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        /* Indicador visual de carregamento nos botões */
+        .btn.loading {
+            position: relative;
+            color: transparent;
+        }
+        
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Melhorias de acessibilidade */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <img src="https://i.imgur.com/c5XQ7TW.png" alt="Minibar EAC Logo" class="logo-image" onerror="this.style.display='none'; this.parentElement.innerHTML='🍻';">
+            </div>
+            <h1>Minibar EAC</h1>
+            <div class="subtitle">Sede fortes e corajosos - Firmes na fé, unidos no amor</div>
+        </div>
+
+        <!-- Tela Inicial -->
+        <div id="homeScreen" class="screen">
+            <button class="btn btn-register" onclick="showRegisterCustomerScreen()">
+                👤 Cadastrar Nova Pessoa
+            </button>
+            <button class="btn" onclick="showRegisterScreen()">
+                🛒 Registrar Compra
+            </button>
+            <button class="btn btn-secondary" onclick="showHistoryScreen()">
+                📊 Consultar Histórico por Telefone
+            </button>
+            <button class="btn btn-success" onclick="showReportsScreen()">
+                📈 Relatórios de Vendas
+            </button>
+        </div>
+
+        <!-- Tela de Cadastro de Cliente -->
+        <div id="registerCustomerScreen" class="screen hidden">
+            <button class="back-btn" onclick="showHomeScreen()">← Voltar</button>
+            <h2>Cadastrar Nova Pessoa</h2>
+            
+            <div class="customer-form">
+                <div class="form-group">
+                    <label for="newCustomerName">Nome Completo</label>
+                    <input type="text" id="newCustomerName" placeholder="Digite o nome completo" maxlength="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="newCustomerPhone">Telefone (55DDDXXXXXXXXX)</label>
+                    <input type="tel" id="newCustomerPhone" placeholder="Ex: 5521999887766" oninput="formatPhone(this)" maxlength="13">
+                </div>
+                
+                <div id="registerCustomerAlert"></div>
+                
+                <button class="btn btn-register" onclick="registerNewCustomer()">
+                    ✅ Cadastrar Pessoa
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela de Registro de Compra -->
+        <div id="registerScreen" class="screen hidden">
+            <button class="back-btn" onclick="showHomeScreen()">← Voltar</button>
+            <h2>Registrar Compra</h2>
+            
+            <div class="form-group">
+                <label for="phoneInput">Telefone do Cliente</label>
+                <input type="tel" id="phoneInput" placeholder="Ex: 5521999887766" oninput="formatPhone(this); searchCustomer();" maxlength="13">
+            </div>
+            
+            <div class="form-group">
+                <label for="customerName">Nome do Cliente</label>
+                <input type="text" id="customerName" placeholder="Nome será preenchido automaticamente" readonly>
+            </div>
+            
+            <h3>Adicionar Produto</h3>
+            
+            <div class="form-group">
+                <label for="productSelect">Produto</label>
+                <select id="productSelect">
+                    <option value="">Carregando produtos...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="quantityInput">Quantidade</label>
+                <input type="number" id="quantityInput" min="1" value="1">
+            </div>
+            
+            <button class="btn" onclick="addToCart()">
+                ➕ Adicionar ao Carrinho
+            </button>
+            
+            <div id="registerAlert"></div>
+            
+            <h3>Carrinho de Compras</h3>
+            <div id="cartItems"></div>
+            
+            <button class="btn btn-success" onclick="finalizePurchase()" id="finalizePurchaseBtn" style="display: none;">
+                🛒 Finalizar Compra
+            </button>
+        </div>
+
+        <!-- Tela de Histórico -->
+        <div id="historyScreen" class="screen hidden">
+            <button class="back-btn" onclick="showHomeScreen()">← Voltar</button>
+            <h2>Histórico de Compras</h2>
+            
+            <div class="form-group">
+                <label for="historyPhoneInput">Telefone do Cliente</label>
+                <input type="tel" id="historyPhoneInput" placeholder="Ex: 5521999887766" oninput="formatPhone(this)" maxlength="13">
+            </div>
+            
+            <button class="btn" onclick="searchHistory()">
+                🔍 Buscar Histórico
+            </button>
+            
+            <div id="historyResults"></div>
+        </div>
+
+        <!-- Tela de Relatórios -->
+        <div id="reportsScreen" class="screen hidden">
+            <button class="back-btn" onclick="showHomeScreen()">← Voltar</button>
+            <h2>Relatórios de Vendas</h2>
+
+            <div class="form-group">
+                <label for="reportStartDate">Data Inicial</label>
+                <input type="text" id="reportStartDate" placeholder="DD/MM/AAAA" maxlength="10" oninput="maskDate(this)">
+            </div>
+
+            <div class="form-group">
+                <label for="reportEndDate">Data Final</label>
+                <input type="text" id="reportEndDate" placeholder="DD/MM/AAAA" maxlength="10" oninput="maskDate(this)">
+            </div>
+
+            <button class="btn btn-success" onclick="generateReport()">
+                📊 Gerar Relatório
+            </button>
+
+            <div id="reportResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let products = [];
+        let customers = [];
+        let cart = [];
+
+        // Inicializar aplicação
+        document.addEventListener('DOMContentLoaded', function() {
+            loadInitialData();
+            
+            // Definir datas padrão para relatório (últimos 30 dias)
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today);
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+            
+            document.getElementById('reportStartDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+            document.getElementById('reportEndDate').value = today.toISOString().split('T')[0];
+        });
+
+        // Funções de navegação
+        function showHomeScreen() {
+            hideAllScreens();
+            document.getElementById('homeScreen').classList.remove('hidden');
+        }
+
+        function showRegisterCustomerScreen() {
+            hideAllScreens();
+            document.getElementById('registerCustomerScreen').classList.remove('hidden');
+            clearCustomerForm();
+        }
+
+        function showRegisterScreen() {
+            hideAllScreens();
+            document.getElementById('registerScreen').classList.remove('hidden');
+            clearRegisterForm();
+        }
+
+        function showHistoryScreen() {
+            hideAllScreens();
+            document.getElementById('historyScreen').classList.remove('hidden');
+            clearHistoryForm();
+        }
+
+        function showReportsScreen() {
+            hideAllScreens();
+            document.getElementById('reportsScreen').classList.remove('hidden');
+            clearReportResults();
+        }
+
+        function hideAllScreens() {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.add('hidden'));
+        }
+
+        // Funções de limpeza de formulários
+        function clearCustomerForm() {
+            document.getElementById('newCustomerName').value = '';
+            document.getElementById('newCustomerPhone').value = '';
+            document.getElementById('registerCustomerAlert').innerHTML = '';
+        }
+
+        function clearRegisterForm() {
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('customerName').value = '';
+            document.getElementById('quantityInput').value = '1';
+            document.getElementById('productSelect').selectedIndex = 0;
+            document.getElementById('registerAlert').innerHTML = '';
+            cart = [];
+            updateCartDisplay();
+        }
+
+        function clearHistoryForm() {
+            document.getElementById('historyPhoneInput').value = '';
+            document.getElementById('historyResults').innerHTML = '';
+        }
+
+        function clearReportResults() {
+            document.getElementById('reportResults').innerHTML = '';
+        }
+
+        // Função para formatar telefone
+        function formatPhone(input) {
+            let value = input.value.replace(/\D/g, '');
+            
+            if (value.length <= 13) {
+                if (value.length === 11 && !value.startsWith('55')) {
+                    value = '55' + value;
+                }
+                input.value = value;
+            } else {
+                input.value = value.substring(0, 13);
+            }
+        }
+
+        // Função para carregar dados iniciais
+        function loadInitialData() {
+            setLoading('productSelect', true);
+            
+            // Carregar produtos
+            google.script.run
+                .withSuccessHandler(function(data) {
+                    products = data || [];
+                    loadProductsToSelect();
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Erro ao carregar produtos:', error);
+                    showAlert('registerAlert', 'Erro ao carregar produtos. Verifique a planilha.', 'error');
+                    loadProductsToSelect();
+                })
+                .getProducts();
+            
+            // Carregar clientes
+            google.script.run
+                .withSuccessHandler(function(data) {
+                    customers = data || [];
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Erro ao carregar clientes:', error);
+                })
+                .getCustomers();
+        }
+
+        function loadProductsToSelect() {
+            const select = document.getElementById('productSelect');
+            select.innerHTML = '<option value="">Selecione um produto</option>';
+            
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = `${product.nome} - R$ ${product.valor.toFixed(2)}`;
+                select.appendChild(option);
+            });
+        }
+
+        // Função para cadastrar novo cliente
+        function registerNewCustomer() {
+            const name = document.getElementById('newCustomerName').value.trim();
+            const phone = document.getElementById('newCustomerPhone').value.trim();
+            
+            if (!name) {
+                showAlert('registerCustomerAlert', 'Por favor, informe o nome completo.', 'error');
+                return;
+            }
+            
+            if (!phone || phone.length < 13) {
+                showAlert('registerCustomerAlert', 'Por favor, informe um telefone válido (55DDDXXXXXXXXX).', 'error');
+                return;
+            }
+            
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Cadastrando...';
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    btn.disabled = false;
+                    btn.textContent = '✅ Cadastrar Pessoa';
+                    
+                    if (result.success) {
+                        showAlert('registerCustomerAlert', '✅ ' + result.message, 'success');
+                        clearCustomerForm();
+                        
+                        // Recarregar lista de clientes
+                        google.script.run
+                            .withSuccessHandler(function(data) {
+                                customers = data || [];
+                            })
+                            .getCustomers();
+                        
+                        setTimeout(() => showHomeScreen(), 2000);
+                    } else {
+                        showAlert('registerCustomerAlert', '❌ ' + result.message, 'error');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    btn.disabled = false;
+                    btn.textContent = '✅ Cadastrar Pessoa';
+                    console.error('Erro ao cadastrar cliente:', error);
+                    showAlert('registerCustomerAlert', 'Erro ao cadastrar cliente.', 'error');
+                })
+                .addCustomer({name: name, phone: phone});
+        }
+
+        // Função para buscar cliente por telefone
+        function searchCustomer() {
+            const phone = document.getElementById('phoneInput').value.trim();
+            
+            if (!phone) {
+                document.getElementById('customerName').value = '';
+                return;
+            }
+            
+            google.script.run
+                .withSuccessHandler(function(customer) {
+                    if (customer) {
+                        document.getElementById('customerName').value = customer.nome;
+                        showAlert('registerAlert', 'Cliente encontrado: ' + customer.nome, 'success');
+                    } else {
+                        document.getElementById('customerName').value = '';
+                        showAlert('registerAlert', 'Cliente não encontrado. Verifique o telefone ou cadastre uma nova pessoa.', 'error');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Erro ao buscar cliente:', error);
+                    showAlert('registerAlert', 'Erro ao buscar cliente.', 'error');
+                })
+                .getCustomerByPhone(phone);
+        }
+
+        // Função para adicionar produto ao carrinho
+        function addToCart() {
+            const productId = document.getElementById('productSelect').value;
+            const quantity = parseInt(document.getElementById('quantityInput').value);
+            
+            if (!productId) {
+                showAlert('registerAlert', 'Por favor, selecione um produto.', 'error');
+                return;
+            }
+            
+            if (!quantity || quantity <= 0) {
+                showAlert('registerAlert', 'Por favor, informe uma quantidade válida.', 'error');
+                return;
+            }
+            
+            const product = products.find(p => p.id == productId);
+            if (!product) {
+                showAlert('registerAlert', 'Produto não encontrado.', 'error');
+                return;
+            }
+            
+            // Verificar se produto já está no carrinho
+            const existingItem = cart.find(item => item.productId == productId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+                existingItem.subtotal = existingItem.quantity * existingItem.unitPrice;
+            } else {
+                cart.push({
+                    productId: product.id,
+                    productName: product.nome,
+                    quantity: quantity,
+                    unitPrice: product.valor,
+                    subtotal: quantity * product.valor
+                });
+            }
+            
+            updateCartDisplay();
+            
+            // Limpar seleção
+            document.getElementById('productSelect').selectedIndex = 0;
+            document.getElementById('quantityInput').value = '1';
+            
+            showAlert('registerAlert', 'Produto adicionado ao carrinho!', 'success');
+        }
+
+        // Função para atualizar exibição do carrinho
+        function updateCartDisplay() {
+            const cartContainer = document.getElementById('cartItems');
+            const finalizePurchaseBtn = document.getElementById('finalizePurchaseBtn');
+            
+            if (cart.length === 0) {
+                cartContainer.innerHTML = '<p>Carrinho vazio</p>';
+                finalizePurchaseBtn.style.display = 'none';
+                return;
+            }
+            
+            let cartHTML = '';
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                total += item.subtotal;
+                cartHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.productName}</div>
+                            <div class="cart-item-details">Qtd: ${item.quantity} x R$ ${item.unitPrice.toFixed(2)}</div>
+                        </div>
+                        <div class="cart-item-price">R$ ${item.subtotal.toFixed(2)}</div>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">Remover</button>
+                    </div>
+                `;
+            });
+            
+            cartHTML += `
+                <div class="total-section">
+                    <div>Total: <span class="total-amount">R$ ${total.toFixed(2)}</span></div>
+                </div>
+            `;
+            
+            cartContainer.innerHTML = cartHTML;
+            finalizePurchaseBtn.style.display = 'block';
+        }
+
+        // Função para remover item do carrinho
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+            showAlert('registerAlert', 'Item removido do carrinho.', 'success');
+        }
+
+        // Função para finalizar compra
+        function finalizePurchase() {
+            const phone = document.getElementById('phoneInput').value.trim();
+            const customerName = document.getElementById('customerName').value.trim();
+            
+            if (!phone) {
+                showAlert('registerAlert', 'Por favor, informe o telefone do cliente.', 'error');
+                return;
+            }
+            
+            if (!customerName) {
+                showAlert('registerAlert', 'Cliente não encontrado. Verifique o telefone.', 'error');
+                return;
+            }
+            
+            if (cart.length === 0) {
+                showAlert('registerAlert', 'Carrinho está vazio.', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('finalizePurchaseBtn');
+            btn.disabled = true;
+            btn.textContent = 'Processando...';
+            
+            const purchaseData = {
+                telefone: phone,
+                items: cart
+            };
+            
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    btn.disabled = false;
+                    btn.textContent = '🛒 Finalizar Compra';
+                    
+                    if (result.success) {
+                        showAlert('registerAlert', '✅ ' + result.message, 'success');
+                        cart = [];
+                        updateCartDisplay();
+                        setTimeout(() => showHomeScreen(), 3000);
+                    } else {
+                        showAlert('registerAlert', '❌ ' + result.message, 'error');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    btn.disabled = false;
+                    btn.textContent = '🛒 Finalizar Compra';
+                    console.error('Erro ao registrar compra:', error);
+                    showAlert('registerAlert', 'Erro ao registrar compra.', 'error');
+                })
+                .registerPurchase(purchaseData);
+        }
+
+        // Função para buscar histórico
+        function searchHistory() {
+            const phone = document.getElementById('historyPhoneInput').value.trim();
+            
+            if (!phone) {
+                showAlert('historyResults', 'Por favor, informe o telefone.', 'error');
+                return;
+            }
+            
+            const resultsDiv = document.getElementById('historyResults');
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando histórico...</div>';
+            
+            google.script.run
+                .withSuccessHandler(function(purchases) {
+                    if (purchases.length === 0) {
+                        resultsDiv.innerHTML = '<div class="alert alert-error">Nenhuma compra encontrada para este telefone.</div>';
+                        return;
+                    }
+                    
+                    let historyHTML = '<h3>Histórico de Compras:</h3>';
+                    let totalGeral = 0;
+                    
+                    purchases.forEach(purchase => {
+                        totalGeral += purchase.subtotal;
+                        historyHTML += `
+                            <div class="history-item">
+                                <div class="history-date">${new Date(purchase.data).toLocaleDateString('pt-BR')}</div>
+                                <div><strong>${purchase.produto}</strong></div>
+                                <div>Quantidade: ${purchase.quantidade}</div>
+                                <div>Valor Unitário: R$ ${purchase.valorUnitario.toFixed(2)}</div>
+                                <div><strong>Subtotal: R$ ${purchase.subtotal.toFixed(2)}</strong></div>
+                            </div>
+                        `;
+                    });
+                    
+                    historyHTML += `
+                        <div class="total-section">
+                            <div>Total Geral: <span class="total-amount">R$ ${totalGeral.toFixed(2)}</span></div>
+                            <div style="font-size: 14px; margin-top: 5px;">Total de compras: ${purchases.length}</div>
+                        </div>
+                    `;
+                    
+                    resultsDiv.innerHTML = historyHTML;
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Erro ao buscar histórico:', error);
+                    resultsDiv.innerHTML = '<div class="alert alert-error">Erro ao buscar histórico.</div>';
+                })
+                .getPurchaseHistory(phone);
+        }
+
+        // Função para gerar relatório
+        // FUNÇÃO CORRIGIDA PARA O FRONTEND - Substitua a função generateReport existente
+
+        function generateReport() {
+            const rawStart = document.getElementById('reportStartDate').value;
+            const rawEnd = document.getElementById('reportEndDate').value;
+
+            console.log('Datas brutas:', rawStart, rawEnd);
+
+            // Detecção de formato: se vier com / é BR, se vier com - é ISO
+            const startDate = rawStart.includes('/') ? parseDateBRtoISO(rawStart) : rawStart;
+            const endDate = rawEnd.includes('/') ? parseDateBRtoISO(rawEnd) : rawEnd;
+
+            console.log('Datas convertidas:', startDate, endDate);
+
+            if (!startDate || !endDate) {
+                showAlert('reportResults', 'Por favor, verifique o formato das datas.', 'error');
+                return;
+            }
+
+            if (new Date(startDate) > new Date(endDate)) {
+                showAlert('reportResults', 'Data inicial deve ser anterior à data final.', 'error');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('reportResults');
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Gerando relatório...</div>';
+
+            google.script.run
+                .withSuccessHandler(function(report) {
+                    console.log('Resposta recebida:', report);
+
+                    if (report.erro) {
+                        resultsDiv.innerHTML = `<div class="alert alert-error">Erro: ${report.erro}</div>`;
+                        return;
+                    }
+
+                    let reportHTML = `
+                        <h3>Relatório de Vendas</h3>
+                        <div class="alert alert-success">
+                            Período: ${rawStart} a ${rawEnd}<br>
+                            Dados processados com sucesso!
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">${report.vendas.length}</div>
+                                <div class="stat-label">Total de Vendas</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">R$ ${report.totalGeral.toFixed(2)}</div>
+                                <div class="stat-label">Faturamento</div>
+                            </div>
+                        </div>
+                    `;
+
+                    if (report.vendas.length > 0) {
+                        reportHTML += '<h3>Vendas do Período:</h3>';
+                        report.vendas.forEach(sale => {
+                            const dataFormatada = new Date(sale.data).toLocaleDateString('pt-BR');
+                            reportHTML += `
+                                <div class="history-item">
+                                    <div class="history-date">${dataFormatada}</div>
+                                    <div><strong>${sale.produto}</strong></div>
+                                    <div>Cliente: ${sale.nome}</div>
+                                    <div>Telefone: ${sale.telefone}</div>
+                                    <div>Quantidade: ${sale.quantidade}</div>
+                                    <div>Valor Unitário: R$ ${sale.valorUnitario.toFixed(2)}</div>
+                                    <div><strong>Subtotal: R$ ${sale.subtotal.toFixed(2)}</strong></div>
+                                </div>
+                            `;
+                        });
+
+                        reportHTML += `
+                            <div class="total-section">
+                                <div>Total do Período: <span class="total-amount">R$ ${report.totalGeral.toFixed(2)}</span></div>
+                            </div>
+                        `;
+                    } else {
+                        reportHTML += `
+                            <div class="alert alert-error">
+                                Nenhuma venda encontrada no período selecionado.<br>
+                                <small>Verifique se existem dados na aba "Compras" da planilha para o período informado.</small>
+                            </div>
+                        `;
+                    }
+
+                    resultsDiv.innerHTML = reportHTML;
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Erro ao gerar relatório:', error);
+                    resultsDiv.innerHTML = `
+                        <div class="alert alert-error">
+                            Erro ao gerar relatório: ${error.message}<br>
+                            <small>Verifique o console do navegador para mais detalhes.</small>
+                        </div>
+                    `;
+                })
+                .getSalesReport(startDate, endDate);
+
+        }
+            function mostrarRelatorio(resposta) {
+      const divResultado = document.getElementById('resultado-relatorio');
+      divResultado.innerHTML = '';
+
+      if (!resposta.vendas || resposta.vendas.length === 0) {
+        divResultado.innerHTML = '<p>Nenhuma venda encontrada no período.</p>';
+        return;
+      }
+
+      let html = `
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th style="border: 1px solid #ccc; padding: 4px;">Data</th>
+              <th style="border: 1px solid #ccc; padding: 4px;">Produto</th>
+              <th style="border: 1px solid #ccc; padding: 4px;">Qtd</th>
+              <th style="border: 1px solid #ccc; padding: 4px;">V. Unitário</th>
+              <th style="border: 1px solid #ccc; padding: 4px;">Subtotal</th>
+              <th style="border: 1px solid #ccc; padding: 4px;">Comprador</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      resposta.vendas.forEach(venda => {
+        html += `
+          <tr>
+            <td style="border: 1px solid #ccc; padding: 4px;">${new Date(venda.data).toLocaleDateString()}</td>
+            <td style="border: 1px solid #ccc; padding: 4px;">${venda.produto}</td>
+            <td style="border: 1px solid #ccc; padding: 4px;">${venda.quantidade}</td>
+            <td style="border: 1px solid #ccc; padding: 4px;">R$ ${venda.valorUnitario.toFixed(2)}</td>
+            <td style="border: 1px solid #ccc; padding: 4px;">R$ ${venda.subtotal.toFixed(2)}</td>
+            <td style="border: 1px solid #ccc; padding: 4px;">${venda.nome}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+        <p style="margin-top:10px;"><strong>Total Geral:</strong> R$ ${resposta.totalGeral.toFixed(2)}</p>
+      `;
+
+      divResultado.innerHTML = html;
+    }
+
+        // Função auxiliar melhorada para conversão de data
+        function parseDateBRtoISO(dateStr) {
+            if (!dateStr) return null;
+            
+            const parts = dateStr.split('/');
+            if (parts.length !== 3) return null;
+            
+            const day = parts[0].padStart(2, '0');
+            const month = parts[1].padStart(2, '0');
+            const year = parts[2];
+            
+            // Verificar se são números válidos
+            if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+            if (parseInt(day) < 1 || parseInt(day) > 31) return null;
+            if (parseInt(month) < 1 || parseInt(month) > 12) return null;
+            if (parseInt(year) < 1900 || parseInt(year) > 2100) return null;
+            
+            return `${year}-${month}-${day}`;
+        }
+
+        // Função melhorada para máscara de data
+        function maskDate(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 8) value = value.substring(0, 8);
+
+            if (value.length >= 5) {
+                input.value = value.replace(/(\d{2})(\d{2})(\d{0,4})/, '$1/$2/$3');
+            } else if (value.length >= 3) {
+                input.value = value.replace(/(\d{2})(\d{0,2})/, '$1/$2');
+            } else {
+                input.value = value;
+            }
+            
+            // Validação em tempo real
+            if (input.value.length === 10) {
+                const parts = input.value.split('/');
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]);
+                const year = parseInt(parts[2]);
+                
+                if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900) {
+                    input.style.borderColor = '#dc143c';
+                } else {
+                    input.style.borderColor = '#28a745';
+                }
+            }
+        }
+
+        function showAlert(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+            
+            container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+            
+            // Auto-remover alertas de sucesso após 5 segundos
+            if (type === 'success') {
+                setTimeout(() => {
+                    if (container.innerHTML.includes(message)) {
+                        container.innerHTML = '';
+                    }
+                }, 5000);
+            }
+        }
+
+        function setLoading(elementId, loading) {
+            const element = document.getElementById(elementId);
+            if (loading) {
+                element.innerHTML = '<option value="">Carregando...</option>';
+            }
+        }
+
+    </script>
+</body>
+</html>
+
+
+
